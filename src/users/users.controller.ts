@@ -7,21 +7,25 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dto/request/create-user.dto.js';
 import { UpdateUserDto } from './dto/request/update-user.dto.js';
 import { ResponseMessage } from '../common/decorators/response-message.decorator.js';
 import { ResponseCode } from '../common/enums/response-code.enum.js';
+import { ApiTags } from '@nestjs/swagger';
+import { PaginationQueryDto } from '../common/dto/request/pagination-query.dto.js';
 
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
   @ResponseMessage(ResponseCode.USER_FOUND)
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() paginationQueryDto: PaginationQueryDto) {
+    return this.usersService.findAll(paginationQueryDto);
   }
 
   @Get(':id')
