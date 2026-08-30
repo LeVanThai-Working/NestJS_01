@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Observable, map } from 'rxjs';
-import { ApiResponseDto } from '../dto/api-response.dto.js';
+import { ApiResponseDto } from '../dto/response/api-response.dto.js';
 import { ResponseCode } from '../enums/response-code.enum.js';
 import { RESPONSE_MESSAGES } from '../constants/response-message.constants.js';
 import { RESPONSE_CODE_KEY } from '../decorators/response-message.decorator.js';
+import { PaginatedResponse } from '../dto/response/paginated-response.dto.js';
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<
@@ -44,12 +45,18 @@ export class ResponseInterceptor<T> implements NestInterceptor<
             context.getHandler(),
           ) ?? ResponseCode.SUCCESS;
 
-        return new ApiResponseDto(
-          true,
-          code,
-          RESPONSE_MESSAGES[code],
-          data,
-        );
+        // Handle paginated responses
+        if (data instanceof PaginatedResponse) {
+          return new ApiResponseDto(
+            true,
+            code,
+            RESPONSE_MESSAGES[code],
+            data.data as unknown as T,
+            data.meta,
+          );
+        }
+
+        return new ApiResponseDto(true, code, RESPONSE_MESSAGES[code], data);
       }),
     );
   }

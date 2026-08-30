@@ -7,16 +7,29 @@ import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dto/response/user.dto.js';
 import { AppException } from '../common/exceptions/app.exception.js';
 import { ResponseCode } from '../common/enums/response-code.enum.js';
+import { PaginationQueryDto } from '../common/dto/request/pagination-query.dto.js';
+import { PaginatedResponse } from '../common/dto/response/paginated-response.dto.js';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findAll(): Promise<UserResponseDto[]> {
-    const users = await this.userRepository.findAll();
-    return plainToInstance(UserResponseDto, users, {
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginatedResponse<UserResponseDto>> {
+    const { data: users, total } =
+      await this.userRepository.findAll(paginationQueryDto);
+
+    const data = plainToInstance(UserResponseDto, users, {
       excludeExtraneousValues: true,
     });
+
+    return new PaginatedResponse(
+      data,
+      total,
+      paginationQueryDto.page,
+      paginationQueryDto.limit,
+    );
   }
 
   async findById(id: string): Promise<UserResponseDto> {

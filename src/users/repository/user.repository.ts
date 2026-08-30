@@ -4,6 +4,8 @@ import { User } from '../entity/user.entity.js';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/request/create-user.dto.js';
 import { UpdateUserDto } from '../dto/request/update-user.dto.js';
+import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto.js';
+import { PaginatedResult } from '../../common/types/paginated-result.type.js';
 
 @Injectable()
 export class UserRepository {
@@ -12,8 +14,22 @@ export class UserRepository {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<PaginatedResult<User>> {
+    const { page, limit, sortBy, order } = paginationQueryDto;
+    const skip = (page - 1) * limit;
+    const [users, total] = await this.userRepository.findAndCount({
+      skip,
+      take: limit,
+      order: {
+        [sortBy]: order,
+      },
+    });
+    return {
+      data: users,
+      total,
+    };
   }
 
   async findById(id: string): Promise<User | null> {
