@@ -5,9 +5,9 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UsersModule } from './users/users.module.js';
+import { UsersModule } from './modules/users/users.module.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
-import { AuthModule } from './auth/auth.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 

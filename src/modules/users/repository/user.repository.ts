@@ -4,8 +4,8 @@ import { User } from '../entity/user.entity.js';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/request/create-user.dto.js';
 import { UpdateUserDto } from '../dto/request/update-user.dto.js';
-import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto.js';
-import { PaginatedResult } from '../../common/types/paginated-result.type.js';
+import { PaginationQueryDto } from '../../../common/dto/request/pagination-query.dto.js';
+import { PaginatedResult } from '../../../common/types/paginated-result.type.js';
 
 @Injectable()
 export class UserRepository {

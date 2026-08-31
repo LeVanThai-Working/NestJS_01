@@ -13,10 +13,10 @@ import {
 import { UsersService } from './users.service.js';
 import { CreateUserDto } from './dto/request/create-user.dto.js';
 import { UpdateUserDto } from './dto/request/update-user.dto.js';
-import { ResponseMessage } from '../common/decorators/response-message.decorator.js';
-import { ResponseCode } from '../common/enums/response-code.enum.js';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator.js';
+import { ResponseCode } from '../../common/enums/response-code.enum.js';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationQueryDto } from '../common/dto/request/pagination-query.dto.js';
+import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-access-auth.guard.js';
 
 @ApiTags('Users')
