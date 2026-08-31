@@ -7,6 +7,7 @@ export const RESPONSE_MESSAGES: Record<ResponseCode, string> = {
 
   [ResponseCode.UNAUTHORIZED]: 'Unauthorized',
   [ResponseCode.FORBIDDEN]: 'Forbidden',
+  [ResponseCode.INVALID_EMAIL_OR_PASSWORD]: 'Invalid email or password',
 
   [ResponseCode.VALIDATION_ERROR]: 'Validation failed',
 

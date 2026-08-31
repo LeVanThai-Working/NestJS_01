@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserRepository } from './repository/user.repository.js';
 import { CreateUserDto } from './dto/request/create-user.dto.js';
 import * as bcrypt from 'bcrypt';
@@ -34,6 +34,18 @@ export class UsersService {
 
   async findById(id: string): Promise<UserResponseDto> {
     const findUser = await this.userRepository.findById(id);
+
+    if (!findUser) {
+      throw new AppException(ResponseCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    return plainToInstance(UserResponseDto, findUser, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  async findByEmail(email: string): Promise<UserResponseDto> {
+    const findUser = await this.userRepository.findByEmail(email);
 
     if (!findUser) {
       throw new AppException(ResponseCode.USER_NOT_FOUND, HttpStatus.NOT_FOUND);

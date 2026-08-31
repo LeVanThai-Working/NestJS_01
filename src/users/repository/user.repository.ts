@@ -38,6 +38,29 @@ export class UserRepository {
     });
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { email },
+    });
+  }
+
+  //just using for JWT validate
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.email = :email', { email })
+      .addSelect('user.password') // Ép lấy thêm trường password
+      .getOne();
+  }
+
+  async findByIdWithRefreshToken(id: string): Promise<User | null> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .addSelect('user.refreshToken') // Ép lấy thêm trường refreshToken
+      .getOne();
+  }
+
   async create(user: CreateUserDto): Promise<User> {
     return this.userRepository.save(user);
   }
