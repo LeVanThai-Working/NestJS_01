@@ -5,10 +5,10 @@ import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/request/update-user.dto.js';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from './dto/response/user.dto.js';
-import { AppException } from '../common/exceptions/app.exception.js';
-import { ResponseCode } from '../common/enums/response-code.enum.js';
-import { PaginationQueryDto } from '../common/dto/request/pagination-query.dto.js';
-import { PaginatedResponse } from '../common/dto/response/paginated-response.dto.js';
+import { AppException } from '../../common/exceptions/app.exception.js';
+import { ResponseCode } from '../../common/enums/response-code.enum.js';
+import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto.js';
+import { PaginatedResponse } from '../../common/dto/response/paginated-response.dto.js';
 
 @Injectable()
 export class UsersService {
