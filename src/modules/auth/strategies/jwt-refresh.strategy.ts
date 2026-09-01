@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { Request } from 'express';
+import { Role } from '../../../common/enums/role.enum.js';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
@@ -17,11 +18,15 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  async validate(req: Request, payload: { sub: string; email: string }) {
+  async validate(
+    req: Request,
+    payload: { sub: string; email: string; role: Role },
+  ) {
     const refreshToken = req.get('Authorization')?.replace('Bearer', '').trim();
     return {
       userId: payload.sub,
       email: payload.email,
+      role: payload.role,
       refreshToken,
     };
   }
