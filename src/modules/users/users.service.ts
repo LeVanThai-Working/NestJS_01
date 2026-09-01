@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { UserRepository } from './repository/user.repository.js';
+import { UserRepository } from './repositories/user.repository.js';
 import { CreateUserDto } from './dto/request/create-user.dto.js';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/request/update-user.dto.js';

@@ -5,10 +5,11 @@ import { CreateUserDto } from '../users/dto/request/create-user.dto.js';
 import { AppException } from '../../common/exceptions/app.exception.js';
 import { ResponseCode } from '../../common/enums/response-code.enum.js';
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../users/repository/user.repository.js';
+import { UserRepository } from '../users/repositories/user.repository.js';
 import { LoginDto } from './dto/request/login.dto.js';
 import { ConfigService } from '@nestjs/config';
 import type { StringValue } from 'ms';
+import { Role } from '../../common/enums/role.enum.js';
 
 @Injectable()
 export class AuthService {
@@ -20,8 +21,8 @@ export class AuthService {
   ) {}
 
   // 1. Hàm sinh cả 2 Token
-  private async generateTokens(userId: string, email: string) {
-    const payload = { sub: userId, email };
+  private async generateTokens(userId: string, email: string, role: Role) {
+    const payload = { sub: userId, email, role };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.getOrThrow<string>(
@@ -84,7 +85,7 @@ export class AuthService {
   // 5. Login
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
-    const tokens = await this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken);
     return tokens;
   }
@@ -108,7 +109,7 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    const tokens = await this.generateTokens(user.id, user.email);
+    const tokens = await this.generateTokens(user.id, user.email, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken); // Token rotation
     return tokens;
   }

@@ -17,15 +17,16 @@ import { ResponseMessage } from '../../common/decorators/response-message.decora
 import { ResponseCode } from '../../common/enums/response-code.enum.js';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationQueryDto } from '../../common/dto/request/pagination-query.dto.js';
-import { JwtAuthGuard } from '../auth/guards/jwt-access-auth.guard.js';
+import { Role } from '../../common/enums/role.enum.js';
+import { Roles } from '../../common/decorators/role.decorator.js';
 
 @ApiTags('Users')
 @Controller('users')
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
+  @Roles(Role.ADMIN)
   @ResponseMessage(ResponseCode.USER_FOUND)
   findAll(@Query() paginationQueryDto: PaginationQueryDto) {
     return this.usersService.findAll(paginationQueryDto);

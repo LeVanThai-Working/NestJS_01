@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -8,6 +8,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './modules/users/users.module.js';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { RolesGuard } from './common/guards/roles.guard.js';
+import { JwtAuthGuard } from './common/guards/jwt-access-auth.guard.js';
+import { JwtRefreshGuard } from './common/guards/jwt-refresh-auth.guard.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -55,6 +58,14 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     {
       provide: APP_INTERCEPTOR,
       useClass: ResponseInterceptor,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard, // Chạy sau: kiểm tra quyền
     },
   ],
 })
