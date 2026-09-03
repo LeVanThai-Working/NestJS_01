@@ -4,17 +4,19 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { ResponseCode } from '../enums/response-code.enum.js';
 import { RESPONSE_MESSAGES } from '../constants/response-message.constants.js';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
   catch(exception: unknown, host: ArgumentsHost): void {
     const context = host.switchToHttp();
-
+    const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -69,6 +71,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
           code = ResponseCode.INVALID_REQUEST;
         }
       }
+    }
+
+    // --- LOGGING ---
+    const logContext = `${request.method} ${request.url}`;
+    if (status >= 500) {
+      // 5xx errors: Log full error and stack trace
+      const stack =
+        exception instanceof Error
+          ? exception.stack
+          : JSON.stringify(exception);
+      this.logger.error(`[${status}] ${message} - ${logContext}`, stack);
+    } else {
+      // 4xx errors: Log as warning for tracking invalid requests/auth failures
+      this.logger.warn(`[${status}] ${message} - ${logContext}`);
     }
 
     response.status(status).json({

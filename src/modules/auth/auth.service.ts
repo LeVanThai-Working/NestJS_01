@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service.js';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/request/create-user.dto.js';
@@ -13,6 +13,7 @@ import { Role } from '../../common/enums/role.enum.js';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly userRepository: UserRepository,
     private readonly usersService: UsersService,
@@ -79,11 +80,15 @@ export class AuthService {
 
   // 4. Register
   async register(createUserDto: CreateUserDto) {
+    this.logger.log(`Registering user with email: ${createUserDto.email}`);
+
     return this.usersService.create(createUserDto);
   }
 
   // 5. Login
   async login(loginDto: LoginDto) {
+    this.logger.log(`Logging in user with email: ${loginDto.email}`);
+
     const user = await this.validateUser(loginDto.email, loginDto.password);
     const tokens = await this.generateTokens(user.id, user.email, user.role);
     await this.updateRefreshToken(user.id, tokens.refreshToken);

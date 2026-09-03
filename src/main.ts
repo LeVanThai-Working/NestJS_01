@@ -5,8 +5,13 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter.js';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const app = await NestFactory.create(AppModule, {
     instrument: ObserveInstrument,
+    logger: isProduction
+      ? ['error', 'warn', 'log']
+      : ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
   app.useGlobalFilters(new HttpExceptionFilter());
