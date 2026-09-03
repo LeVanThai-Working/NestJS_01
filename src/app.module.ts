@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { createObserveModule } from '@nestjs/observe';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller.js';
@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
 import { RolesGuard } from './common/guards/roles.guard.js';
 import { JwtAuthGuard } from './common/guards/jwt-access-auth.guard.js';
 import { JwtRefreshGuard } from './common/guards/jwt-refresh-auth.guard.js';
+import { HttpLoggerMiddleware } from './common/middlewares/logger.middleware.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -69,4 +70,8 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpLoggerMiddleware).forRoutes('*');
+  }
+}

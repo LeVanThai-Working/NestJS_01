@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from './repositories/user.repository.js';
 import { CreateUserDto } from './dto/request/create-user.dto.js';
 import * as bcrypt from 'bcrypt';
@@ -12,11 +12,20 @@ import { PaginatedResponse } from '../../common/dto/response/paginated-response.
 
 @Injectable()
 export class UsersService {
+  private readonly logger = new Logger(UsersService.name);
   constructor(private readonly userRepository: UserRepository) {}
 
   async findAll(
     paginationQueryDto: PaginationQueryDto,
   ): Promise<PaginatedResponse<UserResponseDto>> {
+    this.logger.log(
+      `Fetching users with pagination: 
+      page=${paginationQueryDto.page},
+      limit=${paginationQueryDto.limit},
+      sortBy=${paginationQueryDto.sortBy},
+      order=${paginationQueryDto.order}`,
+    );
+
     const { data: users, total } =
       await this.userRepository.findAll(paginationQueryDto);
 
@@ -33,6 +42,8 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<UserResponseDto> {
+    this.logger.log(`Fetching user with ID: ${id}`);
+
     const findUser = await this.userRepository.findById(id);
 
     if (!findUser) {
@@ -45,6 +56,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<UserResponseDto> {
+    this.logger.log(`Fetching user with email: ${email}`);
     const findUser = await this.userRepository.findByEmail(email);
 
     if (!findUser) {
@@ -57,6 +69,8 @@ export class UsersService {
   }
 
   async create(user: CreateUserDto): Promise<UserResponseDto> {
+    this.logger.log(`Creating user with email: ${user.email}`);
+
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const createdUser = await this.userRepository.create({
       ...user,
@@ -69,6 +83,8 @@ export class UsersService {
   }
 
   async update(id: string, user: UpdateUserDto): Promise<UserResponseDto> {
+    this.logger.log(`Updating user with ID: ${id}`);
+
     const updatedUser = await this.userRepository.update(id, user);
 
     if (!updatedUser) {
@@ -81,6 +97,8 @@ export class UsersService {
   }
 
   async delete(id: string) {
+    this.logger.warn(`Deleting user with ID: ${id}`);
+
     const deletedUser = await this.userRepository.delete(id);
 
     if (!deletedUser) {
