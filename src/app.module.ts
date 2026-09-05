@@ -45,7 +45,7 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
         password: configService.getOrThrow('DB_PASSWORD'),
         database: configService.getOrThrow('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false, // Luôn để false khi dùng migration để tránh mất dữ liệu
       }),
     }),
 
